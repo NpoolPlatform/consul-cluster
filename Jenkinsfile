@@ -35,12 +35,13 @@ pipeline {
         sh 'cd .consul-on-kubernetes; mkdir -p $HOME/.consul/$TARGET_ENV/ca'
 
         sh 'cd .consul-on-kubernetes; cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca'
-        sh 'cd .consul-on-kubernetes; cfssl gencert -ca=$HOME/.consul/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/.consul/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul'
-
-        sh 'cd .consul-on-kubernetes; mv ca.csr $HOME/.consul/$TARGET_ENV/ca'
 
         sh 'cd .consul-on-kubernetes; mv ca.pem $HOME/.consul/$TARGET_ENV/ca'
         sh 'cd .consul-on-kubernetes; mv ca-key.pem $HOME/.consul/$TARGET_ENV/ca'
+        sh 'cd .consul-on-kubernetes; mv ca.csr $HOME/.consul/$TARGET_ENV/ca'
+
+        sh 'cd .consul-on-kubernetes; cfssl gencert -ca=$HOME/.consul/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/.consul/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul'
+
         sh 'cd .consul-on-kubernetes; mv consul.pem $HOME/.consul/$TARGET_ENV/ca'
         sh 'cd .consul-on-kubernetes; mv consul-key.pem $HOME/.consul/$TARGET_ENV/ca'
 
