@@ -32,11 +32,21 @@ pipeline {
       steps {
         sh 'rm -rf .consul-on-kubernetes'
         sh 'git clone https://github.com/kelseyhightower/consul-on-kubernetes.git .consul-on-kubernetes'
-        sh 'cd .consul-on-kubernetes; mkdir -p $HOME/$TARGET_ENV/ca; cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca'
-        sh 'cfssl gencert -ca=$HOME/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul'
+        sh 'cd .consul-on-kubernetes; mkdir -p $HOME/.consul/$TARGET_ENV/ca'
+
+        sh 'cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca'
+        sh 'cfssl gencert -ca=$HOME/.consul/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/.consul/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul'
+
+        sh 'mv ca.csr $HOME/.consul/$TARGET_ENV/ca'
+
+        sh 'mv ca.pem $HOME/.consul/$TARGET_ENV/ca'
+        sh 'mv ca-key.pem $HOME/.consul/$TARGET_ENV/ca'
+        sh 'mv consul.pem $HOME/.consul/$TARGET_ENV/ca'
+        sh 'mv consul-key.pem $HOME/.consul/$TARGET_ENV/ca'
+
         sh(returnStdout: true, script: '''
           GOSSIP_ENCRYPTION_KEY=`consul keygen`
-          kubectl create secret generic consul --from-literal="gossip-encryption-key=$GOSSIP_ENCRYPTION_KEY" --from-file=$HOME/$TARGET_ENV/ca/ca.pem --from-file=$HOME/$TARGET_ENV/ca/consul.pem --from-file=$HOME/$TARGET_ENV/ca/consul-key.pem
+          kubectl create secret generic consul --from-literal="gossip-encryption-key=$GOSSIP_ENCRYPTION_KEY" --from-file=$HOME/.consul/$TARGET_ENV/ca/ca.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul-key.pem
         '''.stripIndent())
         sh 'kubectl create configmap consul --from-file=configs/server.json'
       }
