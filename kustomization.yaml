@@ -1,0 +1,5 @@
+commonLabels:
+  # app: consul-cluster
+
+resources:
+- 01-consul.yaml
