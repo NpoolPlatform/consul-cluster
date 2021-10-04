@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  tools {
+    consul 'consul'
+  }
   stages {
     stage('Clone consul cluster') {
       steps {
