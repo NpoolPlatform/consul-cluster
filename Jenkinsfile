@@ -16,7 +16,7 @@ pipeline {
           }
 
           if (!fileExists("/usr/bin/cfssljson")) {
-            sj 'curl -sL https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o /usr/bin/cfssljson'
+            sh 'curl -sL https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o /usr/bin/cfssljson'
             sh 'chmod a+x /usr/bin/cfssljson'
           }
 
