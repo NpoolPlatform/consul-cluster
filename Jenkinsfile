@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  tools {
-    consul 'consul'
-  }
   stages {
     stage('Clone consul cluster') {
       steps {
@@ -26,6 +23,12 @@ pipeline {
           if (!fileExists("/usr/bin/cfssl-certinfo")) {
             sh 'curl -sL https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o /usr/bin/cfssl-certinfo'
             sh 'chmod a+x /usr/bin/cfssl-certinfo'
+          }
+
+          if (!fileExists("/usr/bin/consul")) {
+            sh 'git clone https://github.com/hashicorp/consul.git .consul'
+            sh 'cd .consul; make tools; make dev; cp ./bin/consul /usr/bin/consul'
+            sh 'consul -v'
           }
         }
       }
