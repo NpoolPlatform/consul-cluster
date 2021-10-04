@@ -7,6 +7,27 @@ pipeline {
       }
     }
 
+    stage('Check cfssl tools') {
+      steps {
+        script {
+          if (!fileExists("/usr/bin/cfssl")) {
+            curl -sL https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o /usr/bin/cfssl
+            chmod a+x /usr/bin/cfssl
+          }
+
+          if (!fileExists("/usr/bin/cfssljson")) {
+            curl -sL https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o /usr/bin/cfssljson
+            chmod a+x /usr/bin/cfssljson
+          }
+
+          if (!fileExists("/usr/bin/cfssl-certinfo")) {
+            curl -sL https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o /usr/bin/cfssl-certinfo
+            chmod a+x /usr/bin/cfssl-certinfo
+          }
+        }
+      }
+    }
+
     stage('Prepare kubernetes consul') {
       steps {
         sh 'git clone https://github.com/kelseyhightower/consul-on-kubernetes.git .consul-on-kubernetes'
