@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('Clone traefik ingress') {
+    stage('Clone consul cluster') {
       steps {
         git(url: scm.userRemoteConfigs[0].url, branch: '$BRANCH_NAME', changelog: true, credentialsId: 'KK-github-key', poll: true)
       }
@@ -12,7 +12,7 @@ pipeline {
         expression { DEPLOY_TARGET == 'true' }
       }
       steps {
-        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 03-ingress.yaml'
+        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 02-ingress.yaml'
         sh 'cd /etc/kubeasz; ./ezctl checkout $TARGET_ENV'
         sh 'kubectl apply -k .'
       }
