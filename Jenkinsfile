@@ -30,6 +30,7 @@ pipeline {
 
     stage('Prepare kubernetes consul') {
       steps {
+        sh 'rm -rf .consul-on-kubernetes'
         sh 'git clone https://github.com/kelseyhightower/consul-on-kubernetes.git .consul-on-kubernetes'
         sh 'cd .consul-on-kubernetes; mkdir -p $HOME/$TARGET_ENV/ca; cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca'
         sh 'cfssl gencert -ca=$HOME/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul'
