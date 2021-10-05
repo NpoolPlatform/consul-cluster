@@ -3,6 +3,9 @@ pipeline {
   tools {
     go 'go'
   }
+  environment {
+    GOPROXY = 'https://goproxy.cn,direct'
+  }
   stages {
     stage('Clone consul cluster') {
       steps {
