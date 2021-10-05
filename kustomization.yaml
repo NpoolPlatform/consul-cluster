@@ -2,8 +2,8 @@ commonLabels:
   # app: consul-cluster
 
 resources:
-- services/consul.yaml
-- serviceaccounts/consul.yaml
-- clusterroles/consul.yaml
-- statefulsets/consul.yaml
+- .consul-on-kubernetes/services/consul.yaml
+- .consul-on-kubernetes/serviceaccounts/consul.yaml
+- .consul-on-kubernetes/clusterroles/consul.yaml
+- .consul-on-kubernetes/statefulsets/consul.yaml
 - 01-ingress.yaml
