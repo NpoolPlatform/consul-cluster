@@ -46,7 +46,7 @@ pipeline {
               sh 'git clone https://github.com/helm/helm.git $HOME/.helm/.helm-src'
             }
             sh 'cd $HOME/.helm/.helm-src; make; cp bin/helm /usr/bin/helm'
-            sh 'helm -v'
+            sh 'helm version'
           }
         }
       }
