@@ -29,9 +29,11 @@ pipeline {
           }
 
           if (!fileExists("/usr/bin/consul")) {
-            sh 'rm -rf .consul'
-            sh 'git clone https://github.com/hashicorp/consul.git .consul'
-            sh 'cd .consul; make tools; make dev; cp ./bin/consul /usr/bin/consul'
+            sh 'mkdir -p $HOME/.consul'
+            if (!fileExists("$HOME/.consul/.consul-src")) {
+              sh 'git clone https://github.com/hashicorp/consul.git $HOME/.consul/.consul-src'
+            }
+            sh 'cd $HOME/.consul/.consul-src; make tools; make dev; cp ./bin/consul /usr/bin/consul'
             sh 'consul -v'
           }
         }
