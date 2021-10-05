@@ -52,9 +52,12 @@ pipeline {
         sh(returnStdout: true, script: '''
           cd .consul-on-kubernetes
 
+          set +e
           kubectl get secret | grep consul
+          rc=$?
+          set -e
 
-          if [ ! $? -eq 0 ]; then
+          if [ ! $rc -eq 0 ]; then
             cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca
 
             mv ca.pem $HOME/.consul/$TARGET_ENV/ca
