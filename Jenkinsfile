@@ -13,7 +13,7 @@ pipeline {
       }
     }
 
-    stage('Check cfssl tools') {
+    stage('Check deps tools') {
       steps {
         script {
           if (!fileExists("/usr/bin/cfssl")) {
@@ -39,58 +39,44 @@ pipeline {
             sh 'cd $HOME/.consul/.consul-src; make tools; make dev; cp ./bin/consul /usr/bin/consul'
             sh 'consul -v'
           }
+
+          if (!fileExists("/usr/bin/helm")) {
+            sh 'mkdir -p $HOME/.helm'
+            if (!fileExists("$HOME/.helm/.helm-src")) {
+              sh 'git clone https://github.com/helm/helm.git $HOME/.helm/.helm-src'
+            }
+            sh 'cd $HOME/.helm/.helm-src; make; cp bin/helm /usr/bin/helm'
+            sh 'helm -v'
+          }
         }
       }
     }
 
-    stage('Prepare kubernetes consul') {
+    stage('Switch to current cluster') {
       steps {
-        sh(returnStdout: true, script: '''
-          cd k8s
-
-          set +e
-          kubectl get secret | grep consul
-          rc=$?
-          set -e
-
-          if [ ! $rc -eq 0 ]; then
-            cfssl gencert -initca ca/ca-csr.json | cfssljson -bare ca
-
-            mv ca.pem $HOME/.consul/$TARGET_ENV/ca
-            mv ca-key.pem $HOME/.consul/$TARGET_ENV/ca
-            mv ca.csr $HOME/.consul/$TARGET_ENV/ca
-
-            cfssl gencert -ca=$HOME/.consul/$TARGET_ENV/ca/ca.pem -ca-key=$HOME/.consul/$TARGET_ENV/ca/ca-key.pem -config=ca/ca-config.json -profile=default ca/consul-csr.json | cfssljson -bare consul
-
-            mv consul.pem $HOME/.consul/$TARGET_ENV/ca
-            mv consul-key.pem $HOME/.consul/$TARGET_ENV/ca
-
-            GOSSIP_ENCRYPTION_KEY=`consul keygen`
-            kubectl create secret generic consul --from-literal="gossip-encryption-key=$GOSSIP_ENCRYPTION_KEY" --from-file=$HOME/.consul/$TARGET_ENV/ca/ca.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul-key.pem
-
-            kubectl delete configmap consul || true
-          fi
-
-          set +e
-          kubectl get configmap | grep consul
-          rc=$?
-          set -e
-
-          if [ ! $rc -eq 0 ]; then
-            kubectl create configmap consul --from-file=configs/server.json
-          fi
-        '''.stripIndent())
+        sh 'cd /etc/kubeasz; ./ezctl checkout $TARGET_ENV'
       }
     }
 
-    stage('Deploy to target') {
+    stage('Deploy consul with helm') {
+      when {
+        expression { DEPLOY_TARGET == 'true' }
+      }
+      steps {
+        sh 'rm -rf .consul-helm'
+        sh 'git clone https://github.com/hashicorp/consul-helm.git .consul-helm'
+        sh 'cd .consul-helm; git checkout v0.32.1'
+        sh 'cd .consul-helm; helm install --name consul ./'
+      }
+    }
+
+    stage('Deploy ingress to target') {
       when {
         expression { DEPLOY_TARGET == 'true' }
       }
       steps {
         sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 01-ingress.yaml'
-        sh 'cd /etc/kubeasz; ./ezctl checkout $TARGET_ENV'
-        sh 'kubectl apply -k k8s'
+        sh 'kubectl apply -f 01-ingress.yaml'
       }
     }
   }
