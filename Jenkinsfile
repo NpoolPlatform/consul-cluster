@@ -66,7 +66,7 @@ pipeline {
         sh 'rm -rf .consul-helm'
         sh 'git clone https://github.com/hashicorp/consul-helm.git .consul-helm'
         sh 'cd .consul-helm; git checkout v0.32.1'
-        sh 'cd .consul-helm; helm install consul ./'
+        sh 'cd .consul-helm; helm install --namespace kube-system -f ../values.yaml consul ./'
       }
     }
 
