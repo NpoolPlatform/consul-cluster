@@ -72,8 +72,16 @@ pipeline {
             GOSSIP_ENCRYPTION_KEY=`consul keygen`
             kubectl create secret generic consul --from-literal="gossip-encryption-key=$GOSSIP_ENCRYPTION_KEY" --from-file=$HOME/.consul/$TARGET_ENV/ca/ca.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul-key.pem
           fi
+
+          set +e
+          kubectl get configmap | grep consul
+          rc=$?
+          set -e
+
+          if [ ! $rc -eq 0 ]; then
+            kubectl create configmap consul --from-file=configs/server.json
+          fi
         '''.stripIndent())
-        sh 'cd .consul-on-kubernetes; kubectl create configmap consul --from-file=configs/server.json'
       }
     }
 
