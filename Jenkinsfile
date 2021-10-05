@@ -45,12 +45,8 @@ pipeline {
 
     stage('Prepare kubernetes consul') {
       steps {
-        sh 'rm -rf .consul-on-kubernetes'
-        sh 'git clone https://github.com/kelseyhightower/consul-on-kubernetes.git .consul-on-kubernetes'
-        sh 'cd .consul-on-kubernetes; mkdir -p $HOME/.consul/$TARGET_ENV/ca'
-
         sh(returnStdout: true, script: '''
-          cd .consul-on-kubernetes
+          cd k8s
 
           set +e
           kubectl get secret | grep consul
@@ -94,7 +90,7 @@ pipeline {
       steps {
         sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 01-ingress.yaml'
         sh 'cd /etc/kubeasz; ./ezctl checkout $TARGET_ENV'
-        sh 'kubectl apply -k .'
+        sh 'kubectl apply -k k8s'
       }
     }
   }
