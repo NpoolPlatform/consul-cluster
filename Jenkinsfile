@@ -71,6 +71,8 @@ pipeline {
 
             GOSSIP_ENCRYPTION_KEY=`consul keygen`
             kubectl create secret generic consul --from-literal="gossip-encryption-key=$GOSSIP_ENCRYPTION_KEY" --from-file=$HOME/.consul/$TARGET_ENV/ca/ca.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul.pem --from-file=$HOME/.consul/$TARGET_ENV/ca/consul-key.pem
+
+            kubectl delete configmap consul || true
           fi
 
           set +e
