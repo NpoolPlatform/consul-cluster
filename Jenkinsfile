@@ -44,8 +44,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        // sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,server.storageClass=managed-nfs-storage'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1 --atomic'
       }
     }
 
@@ -56,7 +55,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false --atomic'
       }
     }
 
@@ -65,7 +64,7 @@ pipeline {
         expression { DEPLOY_TARGET == 'true' }
       }
       steps {
-        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 02-ingress.yaml'
+        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 01-ingress.yaml'
         sh 'kubectl apply -f 01-ingress.yaml'
       }
     }
