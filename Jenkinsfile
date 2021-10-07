@@ -37,18 +37,21 @@ pipeline {
     stage('Deploy consul with helm to development') {
       when {
         expression { DEPLOY_TARGET == 'true' }
-        expression { TARGET_ENV == 'development' }
+        anyOf {
+          expression { TARGET_ENV == 'development' }
+          expression { TARGET_ENV == 'testing' }
+        }
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,server.storageClass=managed-nfs-storage'
       }
     }
 
     stage('Deploy consul with helm to testing or production') {
       when {
         expression { DEPLOY_TARGET == 'true' }
-        expression { TARGET_ENV != 'development' }
+        expression { TARGET_ENV == 'production' }
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
