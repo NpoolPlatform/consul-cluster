@@ -58,15 +58,23 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm') {
+    stage('Deploy consul with helm to development') {
       when {
         expression { DEPLOY_TARGET == 'true' }
+        expression { TARGET_ENV == 'development' }
       }
       steps {
-        sh 'rm -rf .consul-helm'
-        sh 'git clone https://github.com/hashicorp/consul-helm.git .consul-helm'
-        sh 'cd .consul-helm; git checkout v0.32.1'
-        sh 'cd .consul-helm; helm install --namespace kube-system -f ../values.$TARGET_ENV.yaml consul ./'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,server.storageClass=local-storage,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1'
+      }
+    }
+
+    stage('Deploy consul with helm to development') {
+      when {
+        expression { DEPLOY_TARGET == 'true' }
+        expression { TARGET_ENV != 'development' }
+      }
+      steps {
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,server.storageClass=local-storage,global.name=consul,client.enabled=false'
       }
     }
 
