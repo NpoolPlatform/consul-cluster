@@ -16,30 +16,6 @@ pipeline {
     stage('Check deps tools') {
       steps {
         script {
-          if (!fileExists("/usr/bin/cfssl")) {
-            sh 'curl -sL https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o /usr/bin/cfssl'
-            sh 'chmod a+x /usr/bin/cfssl'
-          }
-
-          if (!fileExists("/usr/bin/cfssljson")) {
-            sh 'curl -sL https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o /usr/bin/cfssljson'
-            sh 'chmod a+x /usr/bin/cfssljson'
-          }
-
-          if (!fileExists("/usr/bin/cfssl-certinfo")) {
-            sh 'curl -sL https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -o /usr/bin/cfssl-certinfo'
-            sh 'chmod a+x /usr/bin/cfssl-certinfo'
-          }
-
-          if (!fileExists("/usr/bin/consul")) {
-            sh 'mkdir -p $HOME/.consul'
-            if (!fileExists("$HOME/.consul/.consul-src")) {
-              sh 'git clone https://github.com/hashicorp/consul.git $HOME/.consul/.consul-src'
-            }
-            sh 'cd $HOME/.consul/.consul-src; make tools; make dev; cp ./bin/consul /usr/bin/consul'
-            sh 'consul -v'
-          }
-
           if (!fileExists("/usr/bin/helm")) {
             sh 'mkdir -p $HOME/.helm'
             if (!fileExists("$HOME/.helm/.helm-src")) {
@@ -68,7 +44,7 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm to development') {
+    stage('Deploy consul with helm to testing or production') {
       when {
         expression { DEPLOY_TARGET == 'true' }
         expression { TARGET_ENV != 'development' }
