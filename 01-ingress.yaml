@@ -17,5 +17,5 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: consul
+          serviceName: consul-ui
           servicePort: http
