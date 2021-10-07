@@ -41,7 +41,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,server.storageClass=local-storage,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1'
       }
     }
 
@@ -52,7 +52,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,server.storageClass=local-storage,global.name=consul,client.enabled=false'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false'
       }
     }
 
