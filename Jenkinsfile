@@ -44,7 +44,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false,global.tls.enabled=true,global.tls.enableAutoEncrypt=true,global.tls.verify=true,global.acls.manageSystemACLs=true --atomic'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false,global.tls.enabled=true,global.tls.enableAutoEncrypt=true,global.tls.verify=true,global.acls.manageSystemACLs=true'
       }
     }
 
@@ -55,7 +55,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false,dns.enabled=false,global.tls.enabled=true,global.tls.enableAutoEncrypt=true,global.tls.verify=true,global.acls.manageSystemACLs=true --atomic'
+        sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false,dns.enabled=false,global.tls.enabled=true,global.tls.enableAutoEncrypt=true,global.tls.verify=true,global.acls.manageSystemACLs=true'
       }
     }
 
