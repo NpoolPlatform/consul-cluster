@@ -34,7 +34,7 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm to development') {
+    stage('Deploy consul with helm to development or testing') {
       when {
         expression { DEPLOY_TARGET == 'true' }
         anyOf {
@@ -48,7 +48,7 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm to testing or production') {
+    stage('Deploy consul with helm to production') {
       when {
         expression { DEPLOY_TARGET == 'true' }
         expression { TARGET_ENV == 'production' }
