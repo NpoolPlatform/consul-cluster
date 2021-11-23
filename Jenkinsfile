@@ -34,13 +34,10 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm to development or testing') {
+    stage('Deploy consul with helm to development') {
       when {
         expression { DEPLOY_TARGET == 'true' }
-        anyOf {
-          expression { TARGET_ENV == 'development' }
-          expression { TARGET_ENV == 'testing' }
-        }
+        expression { TARGET_ENV == 'development' }
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
@@ -48,10 +45,13 @@ pipeline {
       }
     }
 
-    stage('Deploy consul with helm to production') {
+    stage('Deploy consul with helm to production or testing') {
       when {
         expression { DEPLOY_TARGET == 'true' }
-        expression { TARGET_ENV == 'production' }
+        anyOf {
+          expression { TARGET_ENV == 'production' }
+          expression { TARGET_ENV == 'testing' }
+        }
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
