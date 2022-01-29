@@ -6,10 +6,9 @@ metadata:
   annotations:
     k8s.kuboard.cn/displayName: consul
     k8s.kuboard.cn/workload: consul
-    nginx.org/websocket-services: "consul"
-    nginx.com/sticky-cookie-services: "serviceName=consul srv_id expires=1h path=/"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    kubernetes.io/ingress.class: "devops-vpn-nginx-internal"
+    kubernetes.io/ingress.class: "traefik-internet-vpn"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure, web
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-common-headers@kubernetescrd
 spec:
   rules:
   - host: consul.internal-devops.development.npool.top

@@ -64,8 +64,8 @@ pipeline {
         expression { DEPLOY_TARGET == 'true' }
       }
       steps {
-        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 01-ingress.yaml'
-        sh 'kubectl apply -f 01-ingress.yaml'
+        sh 'sed -i "s/consul.internal-devops.development.npool.top/consul.internal-devops.$TARGET_ENV.npool.top/g" 01-traefik-vpn-ingress.yaml'
+        sh 'kubectl apply -f 01-traefik-vpn-ingress.yaml'
       }
     }
   }
