@@ -41,7 +41,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false'
+        sh 'helm upgrade consul hashicorp/consul --values values.yaml --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false || helm install consul hashicorp/consul --values values.yaml --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false'
       }
     }
 
@@ -54,7 +54,7 @@ pipeline {
       }
       steps {
         sh 'helm repo add hashicorp https://helm.releases.hashicorp.com'
-        sh 'helm install consul hashicorp/consul --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false'
+        sh 'helm upgrade consul hashicorp/consul --values values.yaml --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false || helm install consul hashicorp/consul --values values.yaml --namespace kube-system --version "0.41.0" --set server.storage=1Gi,global.name=consul,client.enabled=false,server.replicas=1,server.bootstrapExpect=1,dns.enabled=false'
         // sh 'helm install consul hashicorp/consul --namespace kube-system --set server.storage=10Gi,global.name=consul,client.enabled=false,dns.enabled=false'
       }
     }
